@@ -3,10 +3,10 @@ from django.db import models  # noqa F401
 
 class Pokemon(models.Model):
     title_ru = models.CharField(max_length=200, verbose_name='[RU] Имя покемона')
-    title_en = models.CharField(max_length=200, blank=True, verbose_name='[EN] Имя покемона')
-    title_jp = models.CharField(max_length=200, blank=True, verbose_name='[JP] Имя покемона')
+    title_en = models.CharField(max_length=200, verbose_name='[EN] Имя покемона')
+    title_jp = models.CharField(max_length=200, verbose_name='[JP] Имя покемона')
     image = models.ImageField(upload_to='pokemon_images', null=True, verbose_name='Фото покемона')
-    description = models.TextField(blank=True, verbose_name='Описание покемона')
+    description = models.TextField(verbose_name='Описание покемона')
     previous_evolution = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True,
                                            related_name='evolution', verbose_name='Из кого покемон эволюционирует')
 
@@ -20,11 +20,11 @@ class PokemonEntity(models.Model):
     lon = models.FloatField(verbose_name='Долгота')
     appeared_at = models.DateTimeField(verbose_name='Время появления покемона')
     disappeared_at = models.DateTimeField(verbose_name='Время исчезновения покемона')
-    level = models.IntegerField(default=0, verbose_name='Уровень')
-    health = models.IntegerField(default=0, verbose_name='Здоровье')
-    strength = models.IntegerField(default=0, verbose_name='Сила')
-    defence = models.IntegerField(default=0, verbose_name='Защита')
-    stamina = models.IntegerField(default=0, verbose_name='Выносливость')
+    level = models.IntegerField(verbose_name='Уровень', null=True, blank=True)
+    health = models.IntegerField(verbose_name='Здоровье', null=True, blank=True)
+    strength = models.IntegerField(verbose_name='Сила', null=True, blank=True)
+    defence = models.IntegerField(verbose_name='Защита', null=True, blank=True)
+    stamina = models.IntegerField(verbose_name='Выносливость', null=True, blank=True)
 
     def __str__(self):
         return f'{self.appeared_at}. {self.pokemon}'
