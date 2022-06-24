@@ -31,10 +31,10 @@ def add_pokemon(folium_map, lat, lon, image_url=DEFAULT_IMAGE_URL):
 
 def show_all_pokemons(request):
     pokemons = Pokemon.objects.all()
-    local_time = localtime()
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
     for pokemon in pokemons:
+        local_time = localtime()
         pokemon_entities = PokemonEntity.objects.filter(pokemon=pokemon, appeared_at__lt=local_time,
                                                         disappeared_at__gt=local_time)
 
@@ -64,13 +64,12 @@ def show_all_pokemons(request):
 
 
 def show_pokemon(request, pokemon_id):
-    local_time = localtime()
-
     try:
         pokemon = Pokemon.objects.get(id=pokemon_id)
     except ObjectDoesNotExist:
         return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
 
+    local_time = localtime()
     pokemon_entities = PokemonEntity.objects.filter(pokemon=pokemon, appeared_at__lt=local_time,
                                                     disappeared_at__gt=local_time)
     pokemon_info = {
@@ -91,7 +90,6 @@ def show_pokemon(request, pokemon_id):
         }
 
     if pokemon.previous_evolution:
-        print(pokemon.previous_evolution)
         pokemon_info["previous_evolution"] = {
             "title_ru": pokemon.previous_evolution.title_ru,
             "pokemon_id": pokemon.previous_evolution.id,
