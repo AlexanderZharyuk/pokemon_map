@@ -70,8 +70,8 @@ def show_pokemon(request, pokemon_id):
         return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
 
     local_time = localtime()
-    pokemon_entities = PokemonEntity.objects.filter(pokemon=pokemon, appeared_at__lt=local_time,
-                                                    disappeared_at__gt=local_time)
+    pokemon_entities = pokemon.pokemon_entities.filter(appeared_at__lt=local_time, disappeared_at__gt=local_time)
+
     pokemon_info = {
         "pokemon_id": pokemon_id,
         "title_ru": pokemon.title_ru,
