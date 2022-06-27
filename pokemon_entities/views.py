@@ -72,7 +72,7 @@ def show_pokemon(request, pokemon_id):
     pokemon_entities = pokemon.pokemon_entities.filter(appeared_at__lt=local_time, disappeared_at__gt=local_time)
     image_path = os.path.join(MEDIA_URL, str(pokemon.image))
 
-    pokemon_info = {
+    requested_pokemon = {
         "pokemon_id": pokemon_id,
         "title_ru": pokemon.title_ru,
         'title_en': pokemon.title_en,
@@ -85,7 +85,7 @@ def show_pokemon(request, pokemon_id):
     pokemon_next_evolution = pokemon.next_evolution.first()
     if pokemon_next_evolution:
         image_path = os.path.join(MEDIA_URL, str(pokemon_next_evolution.image))
-        pokemon_info["next_evolution"] = {
+        requested_pokemon["next_evolution"] = {
             "title_ru": pokemon_next_evolution,
             "pokemon_id": pokemon_next_evolution.id,
             "img_url": request.build_absolute_uri(image_path)
@@ -93,7 +93,7 @@ def show_pokemon(request, pokemon_id):
 
     if pokemon.previous_evolution:
         image_path = os.path.join(MEDIA_URL, str(pokemon.previous_evolution.image))
-        pokemon_info["previous_evolution"] = {
+        requested_pokemon["previous_evolution"] = {
             "title_ru": pokemon.previous_evolution.title_ru,
             "pokemon_id": pokemon.previous_evolution.id,
             "img_url": request.build_absolute_uri(image_path)
@@ -101,18 +101,18 @@ def show_pokemon(request, pokemon_id):
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
     for pokemon_entity in pokemon_entities:
-        pokemon_info["entities"] = {
+        requested_pokemon["entities"] = {
             "level": pokemon_entity.level,
             "lat": pokemon_entity.lat,
             "lon": pokemon_entity.lon
         }
 
         add_pokemon(
-            folium_map, pokemon_info["entities"]['lat'],
-            pokemon_info["entities"]['lon'],
-            pokemon_info['img_url']
+            folium_map, requested_pokemon["entities"]['lat'],
+            requested_pokemon["entities"]['lon'],
+            requested_pokemon['img_url']
         )
 
     return render(request, 'pokemon.html', context={
-        'map': folium_map._repr_html_(), 'pokemon': pokemon_info
+        'map': folium_map._repr_html_(), 'pokemon': requested_pokemon
     })
