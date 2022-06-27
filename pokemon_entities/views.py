@@ -82,11 +82,12 @@ def show_pokemon(request, pokemon_id):
         "entities": [],
     }
 
-    if pokemon.evolution.first():
+    pokemon_next_evolution = pokemon.next_evolution.first()
+    if pokemon_next_evolution:
         pokemon_info["next_evolution"] = {
-            "title_ru": pokemon.evolution.first(),
-            "pokemon_id": pokemon.evolution.first().id,
-            "img_url": request.build_absolute_uri(f'/media/{pokemon.evolution.first().image}')
+            "title_ru": pokemon_next_evolution,
+            "pokemon_id": pokemon_next_evolution.id,
+            "img_url": request.build_absolute_uri(f'/media/{pokemon_next_evolution.image}')
         }
 
     if pokemon.previous_evolution:

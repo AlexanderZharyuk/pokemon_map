@@ -8,7 +8,8 @@ class Pokemon(models.Model):
     image = models.ImageField(upload_to='pokemon_images', null=True, verbose_name='Фото покемона')
     description = models.TextField(verbose_name='Описание покемона')
     previous_evolution = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True,
-                                           related_name='evolution', verbose_name='Из кого покемон эволюционирует')
+                                           related_name='next_evolution',
+                                           verbose_name='Из кого покемон эволюционирует')
 
     def __str__(self):
         return self.title_ru
