@@ -1,3 +1,5 @@
+import os
+
 import folium
 
 from django.http import HttpResponseNotFound
@@ -6,6 +8,7 @@ from django.utils.timezone import localtime
 from django.core.exceptions import ObjectDoesNotExist
 
 from .models import Pokemon, PokemonEntity
+from pogomap.settings import MEDIA_URL
 
 
 MOSCOW_CENTER = [55.751244, 37.618423]
@@ -36,14 +39,16 @@ def show_all_pokemons(request):
     pokemons_entities = list(PokemonEntity.objects.filter(appeared_at__lt=local_time, disappeared_at__gt=local_time))
 
     for pokemon_entity in pokemons_entities:
+        image_path = os.path.join(MEDIA_URL, str(pokemon_entity.pokemon.image))
         add_pokemon(folium_map, pokemon_entity.lat, pokemon_entity.lon,
-                    request.build_absolute_uri(f'/media/{pokemon_entity.pokemon.image}'))
+                    request.build_absolute_uri(image_path))
 
     pokemons_on_page = []
     for pokemon in pokemons:
         pokemon_image = None
         if pokemon.image:
-            pokemon_image = request.build_absolute_uri(f'/media/{pokemon.image}')
+            image_path = os.path.join(MEDIA_URL, str(pokemon.image))
+            pokemon_image = request.build_absolute_uri(image_path)
 
         pokemons_on_page.append({
             'pokemon_id': pokemon.id,
@@ -65,6 +70,7 @@ def show_pokemon(request, pokemon_id):
 
     local_time = localtime()
     pokemon_entities = pokemon.pokemon_entities.filter(appeared_at__lt=local_time, disappeared_at__gt=local_time)
+    image_path = os.path.join(MEDIA_URL, str(pokemon.image))
 
     pokemon_info = {
         "pokemon_id": pokemon_id,
@@ -72,23 +78,25 @@ def show_pokemon(request, pokemon_id):
         'title_en': pokemon.title_en,
         "title_jp": pokemon.title_jp,
         'description': pokemon.description,
-        "img_url": request.build_absolute_uri(f'/media/{pokemon.image}'),
+        "img_url": request.build_absolute_uri(image_path),
         "entities": [],
     }
 
     pokemon_next_evolution = pokemon.next_evolution.first()
     if pokemon_next_evolution:
+        image_path = os.path.join(MEDIA_URL, str(pokemon_next_evolution.image))
         pokemon_info["next_evolution"] = {
             "title_ru": pokemon_next_evolution,
             "pokemon_id": pokemon_next_evolution.id,
-            "img_url": request.build_absolute_uri(f'/media/{pokemon_next_evolution.image}')
+            "img_url": request.build_absolute_uri(image_path)
         }
 
     if pokemon.previous_evolution:
+        image_path = os.path.join(MEDIA_URL, str(pokemon.previous_evolution.image))
         pokemon_info["previous_evolution"] = {
             "title_ru": pokemon.previous_evolution.title_ru,
             "pokemon_id": pokemon.previous_evolution.id,
-            "img_url": request.build_absolute_uri(f'/media/{pokemon.previous_evolution.image}')
+            "img_url": request.build_absolute_uri(image_path)
         }
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
