@@ -69,7 +69,7 @@ def show_pokemon(request, pokemon_id):
         return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
 
     local_time = localtime()
-    pokemon_entities = pokemon.pokemon_entities.filter(appeared_at__lt=local_time, disappeared_at__gt=local_time)
+    pokemon_entities = pokemon.entities.filter(appeared_at__lt=local_time, disappeared_at__gt=local_time)
     image_path = os.path.join(MEDIA_URL, str(pokemon.image))
 
     requested_pokemon = {
@@ -82,7 +82,7 @@ def show_pokemon(request, pokemon_id):
         "entities": [],
     }
 
-    pokemon_next_evolution = pokemon.next_evolution.first()
+    pokemon_next_evolution = pokemon.next_evolutions.first()
     if pokemon_next_evolution:
         image_path = os.path.join(MEDIA_URL, str(pokemon_next_evolution.image))
         requested_pokemon["next_evolution"] = {
