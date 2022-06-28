@@ -1,4 +1,4 @@
-import os
+import urllib.parse
 
 import folium
 
@@ -39,16 +39,16 @@ def show_all_pokemons(request):
     pokemons_entities = list(PokemonEntity.objects.filter(appeared_at__lt=local_time, disappeared_at__gt=local_time))
 
     for pokemon_entity in pokemons_entities:
-        image_path = os.path.join(MEDIA_URL, str(pokemon_entity.pokemon.image))
+        image_url = urllib.parse.urljoin(MEDIA_URL, str(pokemon_entity.pokemon.image))
         add_pokemon(folium_map, pokemon_entity.lat, pokemon_entity.lon,
-                    request.build_absolute_uri(image_path))
+                    request.build_absolute_uri(image_url))
 
     pokemons_on_page = []
     for pokemon in pokemons:
         pokemon_image = None
         if pokemon.image:
-            image_path = os.path.join(MEDIA_URL, str(pokemon.image))
-            pokemon_image = request.build_absolute_uri(image_path)
+            image_url = urllib.parse.urljoin(MEDIA_URL, str(pokemon.image))
+            pokemon_image = request.build_absolute_uri(image_url)
 
         pokemons_on_page.append({
             'pokemon_id': pokemon.id,
@@ -70,7 +70,7 @@ def show_pokemon(request, pokemon_id):
 
     local_time = localtime()
     pokemon_entities = pokemon.entities.filter(appeared_at__lt=local_time, disappeared_at__gt=local_time)
-    image_path = os.path.join(MEDIA_URL, str(pokemon.image))
+    image_url = urllib.parse.urljoin(MEDIA_URL, str(pokemon.image))
 
     requested_pokemon = {
         "pokemon_id": pokemon_id,
@@ -78,25 +78,25 @@ def show_pokemon(request, pokemon_id):
         'title_en': pokemon.title_en,
         "title_jp": pokemon.title_jp,
         'description': pokemon.description,
-        "img_url": request.build_absolute_uri(image_path),
+        "img_url": request.build_absolute_uri(image_url),
         "entities": [],
     }
 
     pokemon_next_evolution = pokemon.next_evolutions.first()
     if pokemon_next_evolution:
-        image_path = os.path.join(MEDIA_URL, str(pokemon_next_evolution.image))
+        image_url = urllib.parse.urljoin(MEDIA_URL, str(pokemon_next_evolution.image))
         requested_pokemon["next_evolution"] = {
             "title_ru": pokemon_next_evolution,
             "pokemon_id": pokemon_next_evolution.id,
-            "img_url": request.build_absolute_uri(image_path)
+            "img_url": request.build_absolute_uri(image_url)
         }
 
     if pokemon.previous_evolution:
-        image_path = os.path.join(MEDIA_URL, str(pokemon.previous_evolution.image))
+        image_url = urllib.parse.urljoin(MEDIA_URL, str(pokemon.previous_evolution.image))
         requested_pokemon["previous_evolution"] = {
             "title_ru": pokemon.previous_evolution.title_ru,
             "pokemon_id": pokemon.previous_evolution.id,
-            "img_url": request.build_absolute_uri(image_path)
+            "img_url": request.build_absolute_uri(image_url)
         }
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
